@@ -137,7 +137,7 @@ mental-health-py/
 │   │   └── tests/          pytest 测试
 │   └── web/                Vue 3 前端（用户端 + 管理端）
 ├── deploy/                 docker-compose + nginx
-├── docs/                   接口契约 / 技术文档 / 上线检查清单 / 开发记录
+├── docs/                   上线检查清单 / 开发记录 / Apifox 导入文件
 ├── scripts/                e2e、OpenAPI 导出、数据库备份、浏览器走查
 ├── database/               建表 SQL（历史参考，实际以 Alembic 为准）
 └── 启动云舒.cmd / 停止云舒.cmd
@@ -147,10 +147,9 @@ mental-health-py/
 
 | 文档 | 说明 |
 |---|---|
-| `docs/云舒-接口契约清单.md` | 全部接口的请求 / 响应契约 |
-| `docs/云舒-后端技术文档.md` | 后端架构与模块说明 |
 | `docs/上线检查清单.md` | 部署前的逐项核对清单 |
-| `docs/开发记录.md` | 工程日志：设计约束、逐日修复记录、验收细节 |
+| `docs/开发记录.md` | 工程日志：接口兼容约定、设计约束、逐日修复记录 |
+| `docs/openapi-apifox.json` | Apifox 可直接导入的接口文档（改接口后重跑 `make api-docs` 再导入） |
 
 ## 免责声明
 
