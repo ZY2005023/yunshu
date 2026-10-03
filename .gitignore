@@ -1,0 +1,30 @@
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+
+# 密钥（绝不提交）
+.env
+
+# 运行产物
+uploads/
+apps/api/static/
+apps/web/dist/
+
+# ⚠️ 数据库备份含真实用户数据（bcrypt 哈希、日记、聊天记录）——绝不能进仓库
+backups/
+
+# 浏览器走查截图：本地证据，不进仓库（README 只描述结论与脚本）
+_shots/
+
+# 前端
+node_modules/
+
+# 编辑器 / 系统
+.vscode/
+.idea/
+.DS_Store

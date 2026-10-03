@@ -1,0 +1,44 @@
+[project]
+name = "ningdu-api"
+version = "0.1.0"
+description = "宁渡课堂 · AI 心理健康助手 后端（Python 版）"
+requires-python = ">=3.12"
+
+# 与 Java 版的技术栈对应关系见 ../../宁渡课堂-接口契约清单.md
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.32",
+    "sqlalchemy>=2.0",
+    "alembic>=1.14",
+    "pymysql>=1.1",
+    "pydantic>=2.9",
+    "pydantic-settings>=2.5",
+    "pyjwt>=2.10",
+    "bcrypt>=4.2",
+    "python-multipart>=0.0.20",
+    "openai>=1.60",
+    # 知识库文档导入解析（services/doc_import.py，延迟导入 —— 不用该功能不加载）
+    "python-docx>=1.1",
+    "pypdf>=5.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.24",
+    "httpx>=0.28",
+    "ruff>=0.8",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"

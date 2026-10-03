@@ -1,0 +1,62 @@
+# 宁渡课堂 · Python 版 编排
+#
+# ⚠️ 建表**交给 Alembic**做（不是把 V1/V2 挂进 initdb.d）。
+#    两套机制同时用会导致 Alembic 没有版本记录、后续迁移对不上。
+#    起库之后执行： docker compose exec api alembic upgrade head
+#
+# ⚠️ 数据库名必须两边一致：
+#    · 这里的 MYSQL_DATABASE（容器里 MySQL 创建哪个库）
+#    · api 服务的 DB_URL（应用连哪个库）
+#    不一致的表现是「容器起来了但一请求就报表不存在」——
+#    因为空库没有 alembic_version，而升级命令又是手动执行的。
+#    现统一取自 DB_NAME，默认 mental_health_py（与 apps/api/.env 的 DB_URL 对齐）。
+#
+# ⚠️ 密码同理：MYSQL_ROOT_PASSWORD 必须与 apps/api/.env 里的 DB_PASSWORD 相同，
+#    否则应用连不上库（表现为启动时报 Access denied）。
+#    建议把 DB_PASSWORD 写进 deploy/.env 后再执行 docker compose。
+#
+# ⚠️ 前端产物：api 容器把 ../apps/web/dist 挂成 /app/static。
+#    所以**必须先构建前端**，否则访问只有 API、没有页面：
+#      cd apps/web && npm run build
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: ningdu-mysql
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-root123456}
+      MYSQL_DATABASE: ${DB_NAME:-mental_health_py}
+      TZ: Asia/Shanghai
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p${DB_PASSWORD:-root123456}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  api:
+    build:
+      context: ../apps/api
+      dockerfile: Dockerfile
+    container_name: ningdu-api
+    env_file:
+      - ../apps/api/.env
+    environment:
+      # 覆盖 .env 里的 localhost —— 容器网络里数据库主机名是 mysql，不是 localhost。
+      # 库名与上面 MYSQL_DATABASE 用同一个变量，杜绝两边写死又不同步。
+      DB_URL: jdbc:mysql://mysql:3306/${DB_NAME:-mental_health_py}?useSSL=false&serverTimezone=UTC
+    ports:
+      - "1236:1236"
+    volumes:
+      - ../apps/api/uploads:/app/uploads
+      - ../apps/web/dist:/app/static:ro
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+volumes:
+  mysql_data:
