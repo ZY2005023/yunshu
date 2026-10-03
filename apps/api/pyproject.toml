@@ -34,6 +34,11 @@ dev = [
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
+# 项目名 yunshu-api 与代码目录 app 不同名，必须显式指定包位置，
+# 否则 hatchling 无法推断要打包哪些文件（pip install -e . 会失败）
+[tool.hatch.build.targets.wheel]
+packages = ["app"]
+
 [tool.pytest.ini_options]
 pythonpath = ["."]
 testpaths = ["tests"]
