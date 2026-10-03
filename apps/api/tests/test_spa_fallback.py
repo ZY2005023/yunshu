@@ -29,17 +29,17 @@ class TestSpaFallback:
 
     def test_spa_route_served_from_dist(self, client: TestClient, monkeypatch, tmp_path):
         """dist 存在时，前端路由路径返回 index.html（HTTP 200）。"""
-        (tmp_path / "index.html").write_text("<html>宁渡课堂 SPA</html>", encoding="utf-8")
+        (tmp_path / "index.html").write_text("<html>云舒 SPA</html>", encoding="utf-8")
         monkeypatch.setattr(app_main, "_DIST", tmp_path)
 
         resp = client.get("/profile")
         assert resp.status_code == 200
-        assert "宁渡课堂 SPA" in resp.text
+        assert "云舒 SPA" in resp.text
 
         # 多级路径同样要兜底（管理端深链接）
         resp = client.get("/back/crisis")
         assert resp.status_code == 200
-        assert "宁渡课堂 SPA" in resp.text
+        assert "云舒 SPA" in resp.text
 
     def test_dist_static_file_direct_hit(self, client: TestClient, monkeypatch, tmp_path):
         """dist 里的真实静态文件（favicon 之类）应直接命中，而不是回 index.html。"""

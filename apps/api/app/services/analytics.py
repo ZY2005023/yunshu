@@ -6,7 +6,7 @@
 Java 的 `Math.round(x)` 等价于 `floor(x + 0.5)`；
 Python 内建 `round()` 是**银行家舍入**（round(2.5) == 2，round(3.5) == 4）。
 用错会让平均分出现 0.1 的偏差 —— 图表上的数字对不上就是这种问题。
-所以这里统一用 `java_round()`。
+所以这里统一用 `round_half_up()`。
 """
 
 from __future__ import annotations
@@ -24,14 +24,14 @@ DAYS = 7
 DEFAULT_EMOTION = "平静"
 
 
-def java_round(value: float) -> int:
+def round_half_up(value: float) -> int:
     """模拟 Java 的 Math.round：floor(x + 0.5)，不是 Python 的银行家舍入。"""
     return math.floor(value + 0.5)
 
 
 def round1(value: float) -> float:
     """保留一位小数（先放大 10 倍按 Java 规则取整再缩回）。"""
-    return java_round(value * 10) / 10.0
+    return round_half_up(value * 10) / 10.0
 
 
 def overview(db: Session) -> dict[str, Any]:
@@ -133,7 +133,7 @@ def overview(db: Session) -> dict[str, Any]:
         "totalSessions": total_sessions,
         "totalMessages": total_messages,
         "avgMessagesPerSession": (
-            java_round(total_messages * 10.0 / total_sessions) / 10.0
+            round_half_up(total_messages * 10.0 / total_sessions) / 10.0
             if total_sessions > 0
             else 0
         ),

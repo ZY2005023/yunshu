@@ -1,4 +1,4 @@
-# 宁渡课堂 · 统一任务入口
+# 云舒 · 统一任务入口
 #
 # Python 后端和 Vue 前端是两套包管理器（pip / npm），没法用一条命令统管，
 # 所以这里放一个 task runner 层 —— 与 aihot 根目录 package.json 的 scripts 一个作用。
@@ -14,7 +14,7 @@ VITE    := apps/web/node_modules/vite/bin/vite.js
 
 help:
 	@echo ""
-	@echo "  宁渡课堂 · 常用命令"
+	@echo "  云舒 · 常用命令"
 	@echo "  ----------------------------------------"
 	@echo "  make setup     首次准备：建虚拟环境并装依赖"
 	@echo "  make api       只起后端(1236)"

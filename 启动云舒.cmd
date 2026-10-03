@@ -1,9 +1,9 @@
 @echo off
 chcp 65001 >nul
-title 宁渡课堂 - 开发环境
+title 云舒 - 开发环境
 
 echo ==========================================
-echo   宁渡课堂 · 启动中
+echo   云舒 · 启动中
 echo   后端  http://localhost:1236   (接口文档 /docs)
 echo   前端  http://localhost:5173
 echo ==========================================
@@ -22,13 +22,13 @@ if not defined NODE_EXE (
 echo 使用 node: %NODE_EXE%
 echo.
 
-start "宁渡-后端" cmd /c "cd /d %~dp0apps\api && .venv\Scripts\python.exe -m uvicorn app.main:app --reload --port 1236"
+start "云舒-后端" cmd /c "cd /d %~dp0apps\api && .venv\Scripts\python.exe -m uvicorn app.main:app --reload --port 1236"
 
 timeout /t 3 /nobreak >nul
 
-start "宁渡-前端" cmd /c "cd /d %~dp0apps\web && "%NODE_EXE%" node_modules\vite\bin\vite.js"
+start "云舒-前端" cmd /c "cd /d %~dp0apps\web && "%NODE_EXE%" node_modules\vite\bin\vite.js"
 
 echo 已在两个新窗口中启动后端与前端。
-echo 关闭请运行 停止宁渡课堂.cmd
+echo 关闭请运行 停止云舒.cmd
 echo.
 pause

@@ -2,10 +2,9 @@
 
 职责：只做装配 —— 异常处理、路由注册、静态资源、SPA 兜底。
 
-⚠️ 三种响应形态，别搞混（对齐原版分层）：
+⚠️ 三种响应形态，别搞混：
   1. 业务异常 / 参数校验 / 未捕获异常 → **HTTP 200** + Result 包装
-     （原版是 @RestControllerAdvice，没有 @ResponseStatus）
-  2. 认证失败（过滤器层）              → HTTP 401/403/400 + Result 包装
+  2. 认证失败（认证依赖层）            → HTTP 401 / 400 + Result 包装
   3. SSE 流                           → text/event-stream，无 Result 外层（见 stream 接口）
 """
 
@@ -64,9 +63,9 @@ async def lifespan(_: FastAPI):
 
 
 app = FastAPI(
-    title="宁渡课堂 · 后端服务",
+    title="云舒 · 后端服务",
     version="0.1.0",
-    description="AI 心理健康助手（由 Java 版迁移而来，接口契约与原版一致）",
+    description="云舒 · AI 心理健康助手 后端服务",
     lifespan=lifespan,
 )
 
@@ -106,8 +105,8 @@ async def handle_business_error(_: Request, exc: BusinessError) -> JSONResponse:
 async def handle_validation_error(_: Request, exc: RequestValidationError) -> JSONResponse:
     """参数校验失败 → HTTP 200 + Result("400", "参数错误", "提示拼接")。
 
-    原版用 `Collectors.joining(", ")` 把各字段的默认提示拼起来放进 data，
-    这里保持同样的形状（多样校验失败时是一串而不是数组）。
+    各字段的默认提示用 ", " 拼成**一串**放进 data（不是数组）——
+    前端按字符串直接展示，改动形状会让提示变成 [object Object]。
     """
     messages = []
     for err in exc.errors():
@@ -153,7 +152,7 @@ app.include_router(analytics_router.router)
 #
 # `/files/**` 保持匿名可访问：<img> 标签带不了 Authorization 头。
 # 防枚举依靠上传时的 UUID 文件名 + 扩展名白名单（见 file 服务）。
-# 路径前缀与原版 WebConfig 的 `/files/**` 一致。
+# 路径前缀固定为 `/files/**`（前端所有图片都按这个前缀拼 URL）。
 # ===========================================================================
 
 # ⚠️ 必须与 file 服务写入用的是同一个目录（settings.file.upload_dir）——
@@ -174,12 +173,12 @@ def index():
     index_file = _DIST / "index.html"
     if index_file.is_file():
         return FileResponse(index_file)
-    return {"service": "宁渡课堂 · 后端服务", "docs": "/docs"}
+    return {"service": "云舒 · 后端服务", "docs": "/docs"}
 
 
 @app.get("/actuator/health", include_in_schema=False)
 def health():
-    """对齐原版：匿名只拿得到 UP，不含组件明细。"""
+    """匿名只拿得到 UP —— 不含数据库等组件明细，外部探测拿不到内部信息。"""
     return {"status": "UP"}
 
 

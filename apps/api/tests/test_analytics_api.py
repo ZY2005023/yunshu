@@ -12,7 +12,7 @@ from datetime import date, timedelta
 import pytest
 from fastapi.testclient import TestClient
 
-from app.services.analytics import java_round, round1
+from app.services.analytics import round_half_up, round1
 
 
 class TestJavaRound:
@@ -31,12 +31,12 @@ class TestJavaRound:
         ],
     )
     def test_matches_java_semantics(self, value: float, expected: int):
-        assert java_round(value) == expected
+        assert round_half_up(value) == expected
 
     def test_python_builtin_would_differ(self):
         """演示差异本身，防止后人"顺手"换成内建 round。"""
         assert round(2.5) == 2
-        assert java_round(2.5) == 3
+        assert round_half_up(2.5) == 3
 
     def test_round1(self):
         assert round1(7.25) == 7.3

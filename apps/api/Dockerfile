@@ -1,4 +1,4 @@
-# 宁渡课堂 · FastAPI 后端
+# 云舒 · FastAPI 后端
 FROM python:3.13-slim
 
 ENV PYTHONUNBUFFERED=1 \
