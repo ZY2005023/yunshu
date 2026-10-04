@@ -227,14 +227,23 @@ def page(
 
     kw = (keyword or "").strip()
     if kw:
-        # 从咨询记录「查看该用户工单」跳过来时用：按账号/昵称过滤。
-        # 用 IN 子查询而不是 JOIN，避免 count 被放大。
+        # 三路匹配，覆盖三种检索意图：
+        #   1. 从咨询记录跳过来按账号/昵称过滤（沿用原行为）
+        #   2. 按用户实际说的话找工单（content_snippet）
+        #   3. 按命中的关键词找工单（matched_terms）
+        # 之前只走第 1 路，对"撑不下去了"等中等风险话术搜不到对应工单
+        # （FINDINGS.md #1，自动化框架实测）—— 工单其实落库了，只是
+        # 检索接口的语义覆盖不全。补 2 3 两条 OR 子句对齐用户检索心智。
         like = f"%{kw}%"
         conditions.append(
-            CrisisEvent.user_id.in_(
-                select(User.id).where(
-                    or_(User.username.like(like), User.nickname.like(like))
-                )
+            or_(
+                CrisisEvent.user_id.in_(
+                    select(User.id).where(
+                        or_(User.username.like(like), User.nickname.like(like))
+                    )
+                ),
+                CrisisEvent.content_snippet.like(like),
+                CrisisEvent.matched_terms.like(like),
             )
         )
 
