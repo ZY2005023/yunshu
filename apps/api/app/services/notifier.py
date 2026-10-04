@@ -137,6 +137,17 @@ def notify_crisis(event: Any) -> None:
     用独立守护线程而不是 asyncio task：调用点既有同步也有异步上下文
     （对话流、日记提交），线程是唯一两边都安全的选择。
     """
+    # ⚠️ **测试模式守卫**：自动化测试时关掉外部 webhook，
+    # 否则每次触发危机话术都会往群里推一条测试数据，把生产群刷爆。
+    # 关法：环境变量 ``SUT_NOTIFY_DISABLED=true``（本地/测试默认开，部署到正式环境删掉这行）。
+    import os
+    if os.environ.get("SUT_NOTIFY_DISABLED", "").strip().lower() in ("true", "1", "yes"):
+        logger.info(
+            "SUT_NOTIFY_DISABLED=true → 跳过外部 webhook 推送（id=%s, level=%s）",
+            getattr(event, "id", None), getattr(event, "level", None),
+        )
+        return
+
     url = (settings.crisis.webhook_url or "").strip()
     if not url:
         # 不静默：留一条日志，让部署方知道现在没人会被通知
